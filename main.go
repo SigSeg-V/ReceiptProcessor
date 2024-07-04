@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"net/http"
 	"os"
@@ -21,6 +22,7 @@ type DB struct {
 }
 
 var db DB
+var logger *log.Logger = log.New(os.Stdout, "receipt-processor > ", 0)
 
 func NewDB() DB {
 	return DB{Db: make(map[string]int), Lock: sync.RWMutex{}}
@@ -66,9 +68,9 @@ func main() {
 
 	err := serve()
 	if err == http.ErrServerClosed {
-		fmt.Println("server closed")
+		logger.Print("server closed")
 	} else if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		logger.Printf(err.Error())
 		os.Exit(1)
 	}
 }
@@ -88,7 +90,7 @@ func getPoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("got request in get points\npoints: %d\n", points)
+	logger.Printf("got request in get points\npoints: %d\n", points)
 	io.WriteString(w, string(response))
 }
 
@@ -125,7 +127,7 @@ func postProcessReceipt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("got request in process receipt\nid: %s, points: %d\n", id, points)
+	logger.Printf("got request in process receipt\nid: %s, points: %d\n", id, points)
 	io.WriteString(w, string(response))
 }
 

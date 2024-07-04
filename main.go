@@ -29,8 +29,8 @@ func NewDB() DB {
 }
 
 func (db *DB) Get(id string) int {
-	db.Lock.Lock()
-	defer db.Lock.Unlock()
+	db.Lock.RLock()
+	defer db.Lock.RUnlock()
 
 	return db.Db[id]
 }
